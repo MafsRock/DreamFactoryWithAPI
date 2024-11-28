@@ -9,13 +9,18 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Mock interpretations for now - replace with AI integration later
-INTERPRETATIONS = [
-    "Os astros indicam que seu subconsciente está tentando lhe dizer algo profundo...",
-    "Segundo antigas tradições místicas, sonhar com isso significa...",
-    "A sabedoria ancestral sugere que este sonho está conectado com suas vidas passadas...",
-    "As cartas do tarô revelam que seu caminho está alinhado com forças poderosas...",
-]
+# Carregar a chave da API do ambiente
+HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
+API_URL = "https://api-inference.huggingface.co/models/gpt2"
+
+# Função para chamar a API Hugging Face
+def gerar_interpretacao(sonho):
+    headers = {"Authorization": f"Bearer {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}"}
+    payload = {"inputs": f"Um sonho descrito: {sonho}. Interprete com humor."}
+    response = requests.post(API_URL, headers=headers, json=payload)
+    if response.status_code == 200:
+        return response.json()[0]['generated_text']
+    return "Erro ao gerar interpretação."
 
 @app.route('/interpret', methods=['POST'])
 def interpret_dream():
@@ -26,8 +31,6 @@ def interpret_dream():
     if not dream_content or not name:
         return jsonify({'error': 'Missing dream content or name'}), 400
     
-    # Mock interpretation - replace with AI call later
-    interpretation = random.choice(INTERPRETATIONS)
     
     return jsonify({
         'name': name,
